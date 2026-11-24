@@ -1,0 +1,43 @@
+﻿@model List<Pedidos.Web.ViewModels.UsuarioListadoViewModel>
+@{
+    ViewBag.Title = "Usuarios y roles";
+    var roles = new[] { Pedidos.Application.Comun.Roles.Administrador, Pedidos.Application.Comun.Roles.Operador, Pedidos.Application.Comun.Roles.Cliente };
+}
+
+<h2>Usuarios y roles</h2>
+
+<table class="table table-striped align-middle">
+    <caption class="visually-hidden">Usuarios registrados y su rol</caption>
+    <thead>
+        <tr>
+            <th scope="col">Correo</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Rol actual</th>
+            <th scope="col">Cambiar rol</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var usuario in Model)
+        {
+            <tr>
+                <td>@usuario.Email</td>
+                <td>@usuario.NombreCompleto</td>
+                <td>@usuario.Rol</td>
+                <td>
+                    @using (Html.BeginForm("CambiarRol", "Usuarios", FormMethod.Post, new { @class = "d-flex gap-2" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="UserId" value="@usuario.Id" />
+                        <select name="Rol" class="form-select form-select-sm" aria-label="Nuevo rol para @usuario.Email">
+                            @foreach (var rol in roles)
+                            {
+                                <option value="@rol">@rol</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Aplicar</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

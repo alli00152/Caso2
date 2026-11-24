@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Pedidos</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+        <div class="container">
+            @Html.ActionLink("Pedidos", "Index", "Ordenes", new { area = "" }, new { @class = "navbar-brand" })
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menuPrincipal"
+                    aria-controls="menuPrincipal" aria-expanded="false" aria-label="Mostrar u ocultar el menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menuPrincipal">
+                <ul class="navbar-nav me-auto">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">@Html.ActionLink("Órdenes", "Index", "Ordenes", new { area = "" }, new { @class = "nav-link" })</li>
+                        <li class="nav-item">@Html.ActionLink("Nueva orden", "Crear", "Ordenes", new { area = "" }, new { @class = "nav-link" })</li>
+                        <li class="nav-item">@Html.ActionLink("Rastreo", "Rastreo", "Ordenes", new { area = "" }, new { @class = "nav-link" })</li>
+                        if (User.IsInRole(Pedidos.Application.Comun.Roles.Administrador))
+                        {
+                            <li class="nav-item">@Html.ActionLink("Usuarios y roles", "Index", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
+                        }
+                    }
+                </ul>
+                <ul class="navbar-nav align-items-center">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item"><span class="navbar-text me-3">@User.Identity.Name</span></li>
+                        <li class="nav-item">
+                            @* Cerrar sesión es POST con token antifalsificación. *@
+                            @using (Html.BeginForm("Salir", "Account", FormMethod.Post, new { @class = "d-inline" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
+                            }
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">@Html.ActionLink("Ingresar", "Ingresar", "Account", new { area = "" }, new { @class = "nav-link" })</li>
+                        <li class="nav-item">@Html.ActionLink("Registrarse", "Registro", "Account", new { area = "" }, new { @class = "nav-link" })</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container body-content mt-3">
+        @* Mensajes del resultado de la operación (TempData sobrevive al redirect del patrón PRG). *@
+        @if (TempData["Exito"] != null)
+        {
+            <div class="alert alert-success" role="status" aria-live="polite">@TempData["Exito"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
+        }
+
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Pedidos</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

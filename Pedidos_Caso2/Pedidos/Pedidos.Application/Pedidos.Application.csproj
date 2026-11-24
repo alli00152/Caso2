@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Pedidos.Application</RootNamespace>
+    <AssemblyName>Pedidos.Application</AssemblyName>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Mismas versiones usadas en HeroVerseMatrix (AutoMapper) y la rama 8.x de FluentValidation,
+         necesaria para que FluentValidation.MVC5 sea compatible en Pedidos.Web. -->
+    <PackageReference Include="AutoMapper" Version="16.2.0" />
+    <PackageReference Include="FluentValidation" Version="8.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Pedidos.Domain\Pedidos.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

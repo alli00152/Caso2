@@ -1,0 +1,23 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Compilación
+bin/
+obj/
+TestResults/
+
+# Paquetes NuGet restaurados (packages.config)
+packages/
+
+# Secretos: nunca versionar credenciales reales (se usa Secrets.config.example como plantilla)
+Secrets.config
+
+# Registros de Serilog
+App_Data/logs/
+*.log
+
+# Bases de datos locales
+App_Data/*.mdf
+App_Data/*.ldf

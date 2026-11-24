@@ -1,0 +1,100 @@
+﻿@model Pedidos.Web.ViewModels.OrdenDetalleViewModel
+@{
+    ViewBag.Title = "Detalle de la orden";
+
+    // Estas variables solo deciden qué botones se muestran (comodidad de uso).
+    // La seguridad real se aplica en el servidor: [Authorize], RequiereOrdenPropia y el servicio.
+    var puedeOperar = User.IsInRole(Pedidos.Application.Comun.Roles.Administrador) || User.IsInRole(Pedidos.Application.Comun.Roles.Operador);
+    var puedeCancelar = User.IsInRole(Pedidos.Application.Comun.Roles.Administrador);
+}
+
+<h2>Orden de @Model.ClienteNombre</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Identificador</dt>
+    <dd class="col-sm-9">@Model.Id</dd>
+    <dt class="col-sm-3">Estado</dt>
+    <dd class="col-sm-9"><span class="badge bg-secondary">@Model.Estado</span></dd>
+    <dt class="col-sm-3">Dirección de entrega</dt>
+    <dd class="col-sm-9">@Model.DireccionEntrega</dd>
+    <dt class="col-sm-3">Número de rastreo</dt>
+    <dd class="col-sm-9">@(Model.NumeroRastreo ?? "Aún no disponible")</dd>
+    <dt class="col-sm-3">Creada (UTC)</dt>
+    <dd class="col-sm-9">@Model.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</dd>
+    @if (Model.FechaEnvio.HasValue)
+    {
+        <dt class="col-sm-3">Enviada (UTC)</dt>
+        <dd class="col-sm-9">@Model.FechaEnvio.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+    }
+    @if (Model.FechaEntrega.HasValue)
+    {
+        <dt class="col-sm-3">Entregada (UTC)</dt>
+        <dd class="col-sm-9">@Model.FechaEntrega.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+    }
+</dl>
+
+<h4>Productos</h4>
+<table class="table table-sm">
+    <thead>
+        <tr><th scope="col">Producto</th><th scope="col">Cantidad</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var detalle in Model.Detalles)
+        {
+            <tr><td>@detalle.Producto</td><td>@detalle.Cantidad</td></tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex flex-wrap gap-2 mb-3">
+    @if (puedeOperar && Model.TransicionesPermitidas.Contains("Confirmada"))
+    {
+        using (Html.BeginForm("Confirmar", "Ordenes", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="OrdenId" value="@Model.Id" />
+            <input type="hidden" name="RowVersion" value="@Model.RowVersion" />
+            <button type="submit" class="btn btn-primary">Confirmar</button>
+        }
+    }
+
+    @if (puedeOperar && Model.TransicionesPermitidas.Contains("EnPreparacion"))
+    {
+        using (Html.BeginForm("IniciarPreparacion", "Ordenes", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="OrdenId" value="@Model.Id" />
+            <input type="hidden" name="RowVersion" value="@Model.RowVersion" />
+            <button type="submit" class="btn btn-primary">Iniciar preparación</button>
+        }
+    }
+
+    @if (puedeOperar && Model.TransicionesPermitidas.Contains("Enviada"))
+    {
+        @Html.ActionLink("Enviar", "Enviar", new { id = Model.Id }, new { @class = "btn btn-primary" })
+    }
+
+    @if (puedeOperar && Model.TransicionesPermitidas.Contains("Entregada"))
+    {
+        using (Html.BeginForm("ConfirmarEntrega", "Ordenes", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="OrdenId" value="@Model.Id" />
+            <input type="hidden" name="RowVersion" value="@Model.RowVersion" />
+            <button type="submit" class="btn btn-success">Marcar como entregada</button>
+        }
+    }
+
+    @if (puedeCancelar && Model.TransicionesPermitidas.Contains("Cancelada"))
+    {
+        using (Html.BeginForm("Cancelar", "Ordenes", FormMethod.Post, new { onsubmit = "return confirm('¿Desea cancelar esta orden?');" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="OrdenId" value="@Model.Id" />
+            <input type="hidden" name="RowVersion" value="@Model.RowVersion" />
+            <button type="submit" class="btn btn-outline-danger">Cancelar orden</button>
+        }
+    }
+</div>
+
+<p>@Html.ActionLink("Volver al listado", "Index")</p>

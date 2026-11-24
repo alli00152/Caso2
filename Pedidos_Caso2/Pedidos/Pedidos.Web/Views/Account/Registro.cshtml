@@ -1,0 +1,40 @@
+﻿@model Pedidos.Web.Models.RegistroFormModel
+@{
+    ViewBag.Title = "Registro";
+}
+
+<h2>Crear cuenta</h2>
+
+@using (Html.BeginForm("Registro", "Account", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.NombreCompleto, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.NombreCompleto, new { @class = "form-control", autocomplete = "name" })
+        @Html.ValidationMessageFor(m => m.NombreCompleto, "", new { @class = "text-danger" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", autocomplete = "email" })
+        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Password, new { @class = "form-label" })
+        @Html.PasswordFor(m => m.Password, new { @class = "form-control", autocomplete = "new-password" })
+        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+        <div class="form-text">Mínimo 8 caracteres, con mayúscula, minúscula y número.</div>
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.ConfirmarPassword, new { @class = "form-label" })
+        @Html.PasswordFor(m => m.ConfirmarPassword, new { @class = "form-control", autocomplete = "new-password" })
+        @Html.ValidationMessageFor(m => m.ConfirmarPassword, "", new { @class = "text-danger" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Registrarse</button>
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,22 @@
+﻿@model Pedidos.Web.ViewModels.ErrorViewModel
+@{
+    ViewBag.Title = Model.Titulo;
+}
+
+@* Mensaje seguro: nunca se muestran excepciones, stack traces, rutas internas ni cadenas de conexión. *@
+<div class="alert alert-danger" role="alert">
+    <h2>@Model.Titulo <small class="text-muted">(@Model.Codigo)</small></h2>
+    <p>@Model.Mensaje</p>
+    @if (!string.IsNullOrEmpty(Model.ErrorId))
+    {
+        <p class="mb-0">Código de error: <strong>@Model.ErrorId</strong></p>
+    }
+</div>
+
+<p>
+    @if (Model.Codigo == 409 && Model.OrdenId.HasValue)
+    {
+        @Html.ActionLink("Volver a cargar la orden", "Detalle", "Ordenes", new { id = Model.OrdenId.Value }, new { @class = "btn btn-primary" })
+    }
+    @Html.ActionLink("Ir al listado de órdenes", "Index", "Ordenes", null, new { @class = "btn btn-outline-secondary" })
+</p>
