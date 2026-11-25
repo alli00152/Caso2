@@ -3,29 +3,54 @@
     ViewBag.Title = "Enviar orden";
 }
 
-<h2>Enviar orden</h2>
-
-@if (!string.IsNullOrEmpty(Model.ClienteNombre))
-{
-    <p><strong>Cliente:</strong> @Model.ClienteNombre<br /><strong>Entrega en:</strong> @Model.DireccionEntrega</p>
-}
-
-@using (Html.BeginForm("Enviar", "Ordenes", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.HiddenFor(m => m.OrdenId)
-    @Html.HiddenFor(m => m.RowVersion)
-
-    <div class="mb-3">
-        @Html.LabelFor(m => m.NumeroRastreo, new { @class = "form-label" })
-        @Html.TextBoxFor(m => m.NumeroRastreo, new { @class = "form-control", maxlength = 50 })
-        @Html.ValidationMessageFor(m => m.NumeroRastreo, "", new { @class = "text-danger" })
+<div class="encabezado">
+    <div>
+        <span class="sobretitulo">Despacho</span>
+        <h1>Enviar orden</h1>
+        <p class="subtitulo">Registre el número de rastreo que asignó la empresa de transporte.</p>
     </div>
+</div>
 
-    <button type="submit" class="btn btn-primary">Registrar envío</button>
-    @Html.ActionLink("Cancelar", "Detalle", new { id = Model.OrdenId }, new { @class = "btn btn-link" })
-}
+<div class="row g-4">
+    @if (!string.IsNullOrEmpty(Model.ClienteNombre))
+    {
+        <div class="col-lg-5">
+            <div class="tarjeta h-100">
+                <h2 class="tarjeta-titulo">Destino</h2>
+                <dl class="ficha mb-0">
+                    <dt>Cliente</dt>
+                    <dd>@Model.ClienteNombre</dd>
+                    <dt>Entrega en</dt>
+                    <dd class="mb-0">@Model.DireccionEntrega</dd>
+                </dl>
+            </div>
+        </div>
+    }
+
+    <div class="col-lg-7">
+        <div class="tarjeta">
+            <h2 class="tarjeta-titulo">Número de rastreo</h2>
+            @using (Html.BeginForm("Enviar", "Ordenes", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(m => m.OrdenId)
+                @Html.HiddenFor(m => m.RowVersion)
+
+                <div class="mb-4">
+                    @Html.LabelFor(m => m.NumeroRastreo, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.NumeroRastreo, new { @class = "form-control input-mono", maxlength = 50, placeholder = "EJ. CR2024ABC123" })
+                    @Html.ValidationMessageFor(m => m.NumeroRastreo, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="acciones">
+                    <button type="submit" class="btn btn-primary">Registrar envío</button>
+                    @Html.ActionLink("Cancelar", "Detalle", new { id = Model.OrdenId }, new { @class = "btn btn-link" })
+                </div>
+            }
+        </div>
+    </div>
+</div>
 
 @section scripts {
     @Scripts.Render("~/bundles/jqueryval")

@@ -11,10 +11,7 @@ using System.Web.Mvc;
 
 namespace Pedidos.Web.Controllers
 {
-    /// <summary>
-    /// Registro, inicio y cierre de sesión con ASP.NET Identity. Las contraseñas las procesa Identity
-    /// (hash y validación); la aplicación nunca las guarda ni las registra en el log.
-    /// </summary>
+    
     public class AccountController : BaseController
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -29,6 +26,21 @@ namespace Pedidos.Web.Controllers
         private IAuthenticationManager Autenticacion
         {
             get { return HttpContext.GetOwinContext().Authentication; }
+        }
+
+        // ---------------------------------------------------------------- Inicio (pantalla de bienvenida)
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult Inicio()
+        {
+            // Quien ya inició sesión va directo al listado; los demás eligen ingresar o registrarse.
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Ordenes");
+            }
+
+            return View();
         }
 
         // ---------------------------------------------------------------- Registro
@@ -126,7 +138,7 @@ namespace Pedidos.Web.Controllers
         {
             Autenticacion.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             TempData["Exito"] = "Sesión cerrada correctamente.";
-            return RedirectToAction("Ingresar");
+            return RedirectToAction("Inicio");
         }
 
         private async Task IniciarSesionAsync(ApplicationUser usuario, bool persistente)

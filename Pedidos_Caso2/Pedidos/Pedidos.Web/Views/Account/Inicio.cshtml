@@ -1,0 +1,13 @@
+﻿@{
+    ViewBag.Title = "Bienvenido";
+}
+
+<div class="caja-acceso text-center">
+    <h1>Bienvenido a Pedidos</h1>
+    <p class="subtitulo mb-4">Registre sus órdenes, siga su envío y consulte el rastreo.</p>
+
+    <div class="d-grid gap-2">
+        @Html.ActionLink("Iniciar sesión", "Ingresar", "Account", null, new { @class = "btn btn-primary btn-lg" })
+        @Html.ActionLink("Crear cuenta", "Registro", "Account", null, new { @class = "btn btn-outline-secondary btn-lg" })
+    </div>
+</div>

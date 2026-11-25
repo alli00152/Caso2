@@ -3,37 +3,61 @@
     ViewBag.Title = "Órdenes";
 }
 
-<h2>Órdenes</h2>
-<p>@Html.ActionLink("Nueva orden", "Crear", null, new { @class = "btn btn-primary" })</p>
+<div class="encabezado">
+    <div>
+        <span class="sobretitulo">Panel</span>
+        <h1>Órdenes</h1>
+        <p class="subtitulo">Todas las órdenes que puede ver con su cuenta.</p>
+    </div>
+    @Html.ActionLink("+ Nueva orden", "Crear", null, new { @class = "btn btn-primary" })
+</div>
 
 @if (Model.Count == 0)
 {
-    <p class="text-muted">No hay órdenes para mostrar.</p>
+    <div class="vacio">
+        <strong>Aún no hay órdenes</strong>
+        Cuando se registre una, aparecerá aquí.
+    </div>
 }
 else
 {
-    <table class="table table-striped">
-        <caption class="visually-hidden">Listado de órdenes</caption>
-        <thead>
-            <tr>
-                <th scope="col">Cliente</th>
-                <th scope="col">Estado</th>
-                <th scope="col">Rastreo</th>
-                <th scope="col">Creada (UTC)</th>
-                <th scope="col"><span class="visually-hidden">Acciones</span></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+    <div class="resumen">
+        <div class="dato"><div class="numero">@Model.Count</div><div class="rotulo">Órdenes</div></div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table tabla">
+            <caption class="visually-hidden">Listado de órdenes</caption>
+            <thead>
                 <tr>
-                    <td>@item.ClienteNombre</td>
-                    <td>@item.Estado</td>
-                    <td>@(item.NumeroRastreo ?? "—")</td>
-                    <td>@item.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@Html.ActionLink("Ver", "Detalle", new { id = item.Id }, new { @class = "btn btn-sm btn-outline-primary" })</td>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Rastreo</th>
+                    <th scope="col">Creada (UTC)</th>
+                    <th scope="col"><span class="visually-hidden">Acciones</span></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.ClienteNombre</td>
+                        <td><span class="pill pill-@item.Estado">@(item.Estado == "EnPreparacion" ? "En preparación" : item.Estado)</span></td>
+                        <td>
+                            @if (item.NumeroRastreo != null)
+                            {
+                                <span class="codigo">@item.NumeroRastreo</span>
+                            }
+                            else
+                            {
+                                <span class="codigo codigo-vacio">sin asignar</span>
+                            }
+                        </td>
+                        <td>@item.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@Html.ActionLink("Ver detalle", "Detalle", new { id = item.Id }, new { @class = "btn btn-sm btn-outline-primary" })</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }

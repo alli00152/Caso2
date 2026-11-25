@@ -1,20 +1,791 @@
-﻿/* Set padding to keep content from hitting the edges */
-.body-content {
-    margin-top: 15px;
-    padding-left: 15px;
-    padding-right: 15px;
+﻿
+
+:root {
+    --fondo: #f4f5f7;
+    --blanco: #ffffff;
+    --texto: #1d2939;
+    --suave: #667085;
+    --borde: #e4e7ec;
+    --lateral: #101828;
+    --lateral-activo: #1d2939;
+    --primario: #0f766e;
+    --primario-osc: #0b5d57;
+    --primario-claro: #e0f2f0;
+    --ambar: #f79009;
+    --peligro: #b42318;
+    --fuente: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+    --bs-body-font-family: var(--fuente);
+    --bs-body-color: var(--texto);
+    --bs-body-bg: var(--fondo);
+    --bs-link-color: var(--primario);
+    --bs-link-hover-color: var(--primario-osc);
 }
 
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
-.dl-horizontal dt {
-    white-space: normal;
+body {
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: var(--fuente);
+    margin: 0;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
-    max-width: 280px;
+h1, h2, h3, h4 {
+    font-family: var(--fuente);
+    font-weight: 700;
+    color: var(--texto);
+    letter-spacing: -.01em;
+}
+
+input, select, textarea {
+    max-width: none;
+}
+
+/* ---------------------------------------------------------------- Estructura con menú lateral */
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+.lateral {
+    width: 250px;
+    flex: none;
+    background: var(--lateral);
+    color: #d0d5dd;
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem 1rem;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+.marca {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    color: #fff;
+    text-decoration: none;
+    padding: .25rem .5rem 1.5rem;
+}
+
+    .marca:hover {
+        color: #fff;
+    }
+
+.marca-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: var(--primario);
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #fff;
+}
+
+.marca-nombre {
+    font-weight: 800;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+    .marca-nombre small {
+        display: block;
+        font-weight: 500;
+        font-size: .7rem;
+        color: #98a2b3;
+        margin-top: .25rem;
+    }
+
+.menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+}
+
+.menu-titulo {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #667085;
+    padding: .9rem .75rem .35rem;
+}
+
+.menu a,
+.menu button {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    width: 100%;
+    padding: .65rem .75rem;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #d0d5dd;
+    font: inherit;
+    font-weight: 500;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color .15s, color .15s;
+}
+
+    .menu a:hover,
+    .menu button:hover {
+        background: var(--lateral-activo);
+        color: #fff;
+    }
+
+    .menu a.activo {
+        background: var(--primario);
+        color: #fff;
+    }
+
+.menu svg {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.lateral-pie {
+    margin-top: auto;
+    border-top: 1px solid #344054;
+    padding-top: 1rem;
+}
+
+.usuario {
+    padding: 0 .75rem .75rem;
+    line-height: 1.3;
+}
+
+    .usuario span {
+        display: block;
+        color: #fff;
+        font-weight: 600;
+        font-size: .88rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .usuario small {
+        color: var(--ambar);
+        font-weight: 600;
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+.principal {
+    flex: 1;
+    min-width: 0;
+    padding: 2rem 2.25rem 3rem;
+}
+
+.principal-interior {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+@media (max-width: 991.98px) {
+    .app {
+        flex-direction: column;
+    }
+
+    .lateral {
+        width: 100%;
+        height: auto;
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: .5rem 1rem;
+        padding: .75rem 1rem;
+    }
+
+    .marca {
+        padding: 0;
+    }
+
+    .menu {
+        flex-direction: row;
+        flex-wrap: wrap;
+        flex: 1;
+    }
+
+    .menu-titulo {
+        display: none;
+    }
+
+    .menu a,
+    .menu button {
+        width: auto;
+        padding: .45rem .7rem;
+    }
+
+    .lateral-pie {
+        margin: 0;
+        border: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+    }
+
+    .usuario {
+        padding: 0;
+    }
+
+    .principal {
+        padding: 1.25rem 1rem 2rem;
+    }
+}
+
+/* ---------------------------------------------------------------- Acceso (sin sesión) */
+
+.invitado {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.invitado-cuerpo {
+    width: 100%;
+    max-width: 440px;
+}
+
+.invitado .marca {
+    justify-content: center;
+    color: var(--texto);
+    padding-bottom: 1.25rem;
+}
+
+    .invitado .marca:hover {
+        color: var(--texto);
+    }
+
+.invitado .marca-nombre small {
+    color: var(--suave);
+}
+
+.caja-acceso {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    padding: 2rem;
+}
+
+    .caja-acceso h1 {
+        font-size: 1.5rem;
+        margin-bottom: .25rem;
+    }
+
+/* ---------------------------------------------------------------- Encabezado de página */
+
+.encabezado {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.sobretitulo {
+    display: block;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--primario);
+    margin-bottom: .25rem;
+}
+
+.encabezado h1,
+.encabezado h2 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.subtitulo {
+    color: var(--suave);
+    margin: .3rem 0 0;
+}
+
+/* ---------------------------------------------------------------- Tarjetas */
+
+.tarjeta {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 1.4rem;
+}
+
+.tarjeta-titulo {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+/* ---------------------------------------------------------------- Botones */
+
+.btn {
+    font-weight: 600;
+    border-radius: 8px;
+    padding: .5rem 1rem;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--primario);
+    --bs-btn-border-color: var(--primario);
+    --bs-btn-hover-bg: var(--primario-osc);
+    --bs-btn-hover-border-color: var(--primario-osc);
+    --bs-btn-active-bg: var(--primario-osc);
+    --bs-btn-active-border-color: var(--primario-osc);
+}
+
+.btn-success {
+    --bs-btn-bg: #067647;
+    --bs-btn-border-color: #067647;
+    --bs-btn-hover-bg: #05603a;
+    --bs-btn-hover-border-color: #05603a;
+    --bs-btn-active-bg: #05603a;
+    --bs-btn-active-border-color: #05603a;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--primario);
+    --bs-btn-border-color: var(--primario);
+    --bs-btn-hover-bg: var(--primario);
+    --bs-btn-hover-border-color: var(--primario);
+    --bs-btn-active-bg: var(--primario);
+    --bs-btn-active-border-color: var(--primario);
+}
+
+.btn-outline-secondary {
+    --bs-btn-color: var(--texto);
+    --bs-btn-border-color: #d0d5dd;
+    --bs-btn-hover-bg: var(--texto);
+    --bs-btn-hover-border-color: var(--texto);
+    --bs-btn-hover-color: #fff;
+}
+
+.btn-outline-danger {
+    --bs-btn-color: var(--peligro);
+    --bs-btn-border-color: #fda29b;
+    --bs-btn-hover-bg: var(--peligro);
+    --bs-btn-hover-border-color: var(--peligro);
+}
+
+.btn-link {
+    color: var(--suave);
+    font-weight: 500;
+}
+
+/* ---------------------------------------------------------------- Formularios */
+
+.form-label {
+    font-weight: 600;
+    font-size: .88rem;
+    margin-bottom: .3rem;
+}
+
+.form-control,
+.form-select {
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    padding: .55rem .8rem;
+    background: #fff;
+}
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--primario);
+        box-shadow: 0 0 0 .22rem rgba(15, 118, 110, .18);
+    }
+
+.input-mono {
+    font-family: var(--mono);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.form-text {
+    color: var(--suave);
+}
+
+.form-check-input:checked {
+    background-color: var(--primario);
+    border-color: var(--primario);
+}
+
+.text-danger,
+.field-validation-error {
+    color: var(--peligro) !important;
+    font-size: .85rem;
+    font-weight: 500;
+}
+
+.input-validation-error {
+    border-color: var(--peligro) !important;
+    background-color: #fffbfa !important;
+}
+
+.validation-summary-errors ul {
+    list-style: none;
+    padding: .7rem 1rem;
+    margin: 0 0 1rem;
+    background: #fef3f2;
+    border: 1px solid #fecdca;
+    border-radius: 8px;
+}
+
+/* ---------------------------------------------------------------- Alertas */
+
+.alert {
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: #ecfdf3;
+    border: 1px solid #abefc6;
+    color: #067647;
+}
+
+.alert-danger {
+    background: #fef3f2;
+    border: 1px solid #fecdca;
+    color: var(--peligro);
+}
+
+/* ---------------------------------------------------------------- Estados (etiquetas de texto) */
+
+.pill {
+    display: inline-block;
+    padding: .2rem .65rem;
+    border-radius: 6px;
+    font-size: .78rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.pill-Creada {
+    color: #475467;
+    background: #f2f4f7;
+}
+
+.pill-Confirmada {
+    color: #1d4ed8;
+    background: #e0eaff;
+}
+
+.pill-EnPreparacion {
+    color: #b54708;
+    background: #fef0c7;
+}
+
+.pill-Enviada {
+    color: #6941c6;
+    background: #ebe9fe;
+}
+
+.pill-Entregada {
+    color: #067647;
+    background: #d1fadf;
+}
+
+.pill-Cancelada {
+    color: #b42318;
+    background: #fee4e2;
+}
+
+/* ---------------------------------------------------------------- Rastreo */
+
+.codigo {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: .82rem;
+    background: #f2f4f7;
+    border-radius: 6px;
+    padding: .15rem .5rem;
+    word-break: break-all;
+}
+
+.codigo-vacio {
+    color: var(--suave);
+    font-family: var(--fuente);
+    font-weight: 500;
+}
+
+.etiqueta {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-left: 5px solid var(--primario);
+    border-radius: 12px;
+    padding: 1.25rem 1.4rem;
+}
+
+    .etiqueta .rotulo {
+        display: block;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--suave);
+        margin-bottom: .2rem;
+    }
+
+    .etiqueta .valor-grande {
+        font-family: var(--mono);
+        font-size: 1.5rem;
+        font-weight: 700;
+        word-break: break-all;
+    }
+
+/* ---------------------------------------------------------------- Progreso (barras, sin círculos) */
+
+.progreso {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+}
+
+    .progreso li {
+        font-size: .8rem;
+        font-weight: 600;
+        color: #98a2b3;
+    }
+
+        .progreso li::before {
+            content: "";
+            display: block;
+            height: 8px;
+            border-radius: 4px;
+            background: #e4e7ec;
+            margin-bottom: .5rem;
+        }
+
+        .progreso li.hecho {
+            color: var(--primario);
+        }
+
+            .progreso li.hecho::before {
+                background: var(--primario);
+            }
+
+        .progreso li.actual {
+            color: #b54708;
+        }
+
+            .progreso li.actual::before {
+                background: var(--ambar);
+            }
+
+.cancelada-aviso {
+    background: #fee4e2;
+    color: #b42318;
+    border-radius: 8px;
+    padding: .75rem 1rem;
+    font-weight: 600;
+}
+
+/* ---------------------------------------------------------------- Tablas */
+
+.tabla {
+    --bs-table-bg: var(--blanco);
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    margin: 0;
+}
+
+    .tabla thead th {
+        background: #f9fafb;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--suave);
+        border-bottom: 1px solid var(--borde);
+        padding: .75rem 1rem;
+    }
+
+    .tabla tbody td {
+        padding: .85rem 1rem;
+        border-bottom: 1px solid var(--borde);
+        vertical-align: middle;
+    }
+
+    .tabla tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .tabla tbody tr:hover td {
+        background: #f9fafb;
+    }
+
+    .tabla tbody td:first-child {
+        font-weight: 600;
+    }
+
+    .tabla tbody td:last-child {
+        text-align: right;
+    }
+
+.tabla-simple {
+    --bs-table-bg: transparent;
+    margin: 0;
+}
+
+    .tabla-simple thead th {
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--suave);
+        border-bottom: 1px solid var(--borde);
+        background: transparent;
+    }
+
+    .tabla-simple td {
+        border-color: var(--borde);
+        vertical-align: middle;
+        background: transparent;
+    }
+
+/* ---------------------------------------------------------------- Resumen del listado */
+
+.resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.dato {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+}
+
+    .dato .numero {
+        font-size: 1.9rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .dato .rotulo {
+        font-size: .75rem;
+        font-weight: 600;
+        color: var(--suave);
+        margin-top: .3rem;
+    }
+
+.vacio {
+    text-align: center;
+    padding: 3rem 1rem;
+    border: 2px dashed #d0d5dd;
+    border-radius: 12px;
+    color: var(--suave);
+}
+
+    .vacio strong {
+        display: block;
+        font-size: 1.15rem;
+        color: var(--texto);
+        margin-bottom: .3rem;
+    }
+
+/* ---------------------------------------------------------------- Detalle */
+
+.ficha dt {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--suave);
+    padding-top: .2rem;
+}
+
+.ficha dd {
+    margin-bottom: .8rem;
+}
+
+.acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    align-items: center;
+}
+
+/* ---------------------------------------------------------------- Error */
+
+.error-pagina {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2rem;
+    align-items: center;
+}
+
+.error-codigo {
+    font-family: var(--mono);
+    font-size: 5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--primario);
+}
+
+@media (max-width: 575.98px) {
+    .error-pagina {
+        grid-template-columns: 1fr;
+    }
+
+    .progreso li {
+        font-size: .66rem;
+    }
+}
+
+/* ---------------------------------------------------------------- Rol */
+
+.rol {
+    display: inline-block;
+    padding: .15rem .6rem;
+    border-radius: 6px;
+    font-size: .75rem;
+    font-weight: 700;
+    background: #f2f4f7;
+    color: #475467;
+}
+
+.rol-Administrador {
+    background: #fee4e2;
+    color: #b42318;
+}
+
+.rol-Operador {
+    background: #e0eaff;
+    color: #1d4ed8;
 }

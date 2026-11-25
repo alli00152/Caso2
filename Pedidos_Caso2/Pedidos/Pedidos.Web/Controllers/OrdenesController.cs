@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNet.Identity;
 using Pedidos.Application.Comun;
 using Pedidos.Application.Contractos;
 using Pedidos.Application.Requests;
@@ -7,6 +8,7 @@ using Pedidos.Web.Extensions;
 using Pedidos.Web.Filters;
 using Pedidos.Web.Models;
 using Pedidos.Web.ViewModels;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
@@ -181,6 +183,7 @@ namespace Pedidos.Web.Controllers
                 return ErrorDe(resultado, model.OrdenId);
             }
 
+            RegistrarCambioDeEstado(model.OrdenId, EstadoOrden.Enviada);
             TempData["Exito"] = "La orden fue enviada y el número de rastreo quedó registrado.";
             return RedirectToAction("Detalle", new { id = model.OrdenId });
         }
@@ -214,6 +217,15 @@ namespace Pedidos.Web.Controllers
 
         // ---------------------------------------------------------------- Auxiliares
 
+        // Evento de auditoría del cambio de estado: solo identificadores, estado y fecha UTC
+        // (nunca la dirección, el número de rastreo ni otros datos personales).
+        private void RegistrarCambioDeEstado(Guid ordenId, EstadoOrden estadoNuevo)
+        {
+            Log.Information(
+                "CAMBIO_ESTADO OrdenId={OrdenId} EstadoNuevo={EstadoNuevo} Usuario={UsuarioId} FechaUtc={FechaUtc:o}",
+                ordenId, estadoNuevo, User.Identity.GetUserId(), DateTime.UtcNow);
+        }
+
         private ActionResult CambiarEstado(CambiarEstadoFormModel model, EstadoOrden destino, string mensajeExito)
         {
             if (model == null || model.OrdenId == Guid.Empty)
@@ -231,6 +243,7 @@ namespace Pedidos.Web.Controllers
                 return ErrorDe(resultado, model.OrdenId);
             }
 
+            RegistrarCambioDeEstado(model.OrdenId, destino);
             TempData["Exito"] = mensajeExito;
             return RedirectToAction("Detalle", new { id = model.OrdenId });
         }

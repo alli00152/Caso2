@@ -3,114 +3,131 @@
     ViewBag.Title = "Nueva orden";
 }
 
-<h2>Nueva orden</h2>
+<div class="encabezado">
+    <div>
+        <span class="sobretitulo">Registro</span>
+        <h1>Nueva orden</h1>
+        <p class="subtitulo">Indique a quién y dónde se entrega, y agregue al menos un producto.</p>
+    </div>
+</div>
 
 @using (Html.BeginForm("Crear", "Ordenes", FormMethod.Post, new { id = "formOrden" }))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    <div class="mb-3">
-        @Html.LabelFor(m => m.ClienteNombre, new { @class = "form-label" })
-        @Html.TextBoxFor(m => m.ClienteNombre, new { @class = "form-control", maxlength = 120 })
-        @Html.ValidationMessageFor(m => m.ClienteNombre, "", new { @class = "text-danger" })
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="tarjeta h-100">
+                <h2 class="tarjeta-titulo">Entrega</h2>
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.ClienteNombre, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.ClienteNombre, new { @class = "form-control", maxlength = 120 })
+                    @Html.ValidationMessageFor(m => m.ClienteNombre, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="mb-0">
+                    @Html.LabelFor(m => m.DireccionEntrega, new { @class = "form-label" })
+                    @Html.TextAreaFor(m => m.DireccionEntrega, 4, 40, new { @class = "form-control", maxlength = 250 })
+                    @Html.ValidationMessageFor(m => m.DireccionEntrega, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="tarjeta h-100">
+                <h2 class="tarjeta-titulo">Productos</h2>
+                @Html.ValidationMessage("Detalles", new { @class = "text-danger d-block mb-2" })
+
+                <table class="table tabla-simple" id="tablaDetalles">
+                    <thead>
+                        <tr>
+                            <th scope="col">Producto</th>
+                            <th scope="col" style="width: 140px;">Cantidad</th>
+                            <th scope="col"><span class="visually-hidden">Quitar</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.Detalles.Count; i++)
+                        {
+                            <tr class="detalle">
+                                <td>
+                                    @Html.TextBoxFor(m => m.Detalles[i].Producto, new { @class = "form-control", maxlength = 100, data_campo = "Producto", aria_label = "Producto" })
+                                    @Html.ValidationMessageFor(m => m.Detalles[i].Producto, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(m => m.Detalles[i].Cantidad, new { @class = "form-control", type = "number", min = 1, max = 99, data_campo = "Cantidad", aria_label = "Cantidad" })
+                                    @Html.ValidationMessageFor(m => m.Detalles[i].Cantidad, "", new { @class = "text-danger" })
+                                </td>
+                                <td><button type="button" class="btn btn-outline-danger btn-sm quitar">Quitar</button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <button type="button" id="agregarDetalle" class="btn btn-outline-secondary btn-sm mt-2">+ Agregar producto</button>
+            </div>
+        </div>
     </div>
 
-    <div class="mb-3">
-        @Html.LabelFor(m => m.DireccionEntrega, new { @class = "form-label" })
-        @Html.TextAreaFor(m => m.DireccionEntrega, 3, 40, new { @class = "form-control", maxlength = 250 })
-        @Html.ValidationMessageFor(m => m.DireccionEntrega, "", new { @class = "text-danger" })
+    <div class="acciones mt-4">
+        <button type="submit" class="btn btn-primary">Registrar orden</button>
+        @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-link" })
     </div>
-
-    <h4>Productos</h4>
-    @Html.ValidationMessage("Detalles", new { @class = "text-danger d-block mb-2" })
-
-    <table class="table" id="tablaDetalles">
-        <thead>
-            <tr>
-                <th scope="col">Producto</th>
-                <th scope="col" style="width: 140px;">Cantidad</th>
-                <th scope="col"><span class="visually-hidden">Quitar</span></th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (var i = 0; i < Model.Detalles.Count; i++)
-            {
-                <tr class="detalle">
-                    <td>
-                        @Html.TextBoxFor(m => m.Detalles[i].Producto, new { @class = "form-control", maxlength = 100, data_campo = "Producto", aria_label = "Producto" })
-                        @Html.ValidationMessageFor(m => m.Detalles[i].Producto, "", new { @class = "text-danger" })
-                    </td>
-                    <td>
-                        @Html.TextBoxFor(m => m.Detalles[i].Cantidad, new { @class = "form-control", type = "number", min = 1, max = 99, data_campo = "Cantidad", aria_label = "Cantidad" })
-                        @Html.ValidationMessageFor(m => m.Detalles[i].Cantidad, "", new { @class = "text-danger" })
-                    </td>
-                    <td><button type="button" class="btn btn-outline-danger btn-sm quitar">Quitar</button></td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <p>
-        <button type="button" id="agregarDetalle" class="btn btn-outline-secondary">Agregar producto</button>
-    </p>
-
-    <button type="submit" class="btn btn-primary">Registrar orden</button>
-    @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-link" })
 }
 
 @section scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script>
-        (function () {
-            var cuerpo = document.querySelector('#tablaDetalles tbody');
+                (function () {
+                    var cuerpo = document.querySelector('#tablaDetalles tbody');
 
-            // Los nombres deben ser consecutivos (Detalles[0], Detalles[1]...) para el model binding.
-            function renumerar() {
-                cuerpo.querySelectorAll('tr.detalle').forEach(function (fila, i) {
-                    fila.querySelectorAll('input[data-campo]').forEach(function (campo) {
-                        var nombre = campo.getAttribute('data-campo');
-                        campo.name = 'Detalles[' + i + '].' + nombre;
-                        campo.id = 'Detalles_' + i + '__' + nombre;
+                    // Los nombres deben ser consecutivos (Detalles[0], Detalles[1]...) para el model binding.
+                    function renumerar() {
+                        cuerpo.querySelectorAll('tr.detalle').forEach(function (fila, i) {
+                            fila.querySelectorAll('input[data-campo]').forEach(function (campo) {
+                                var nombre = campo.getAttribute('data-campo');
+                                campo.name = 'Detalles[' + i + '].' + nombre;
+                                campo.id = 'Detalles_' + i + '__' + nombre;
+                            });
+                            fila.querySelectorAll('[data-valmsg-for]').forEach(function (mensaje) {
+                                var nombre = mensaje.getAttribute('data-valmsg-for').split('.').pop();
+                                mensaje.setAttribute('data-valmsg-for', 'Detalles[' + i + '].' + nombre);
+                            });
+                        });
+                    }
+
+                    function volverAValidar() {
+                        if (window.jQuery && jQuery.validator && jQuery.validator.unobtrusive) {
+                            var $form = jQuery('#formOrden');
+                            $form.removeData('validator').removeData('unobtrusiveValidation');
+                            jQuery.validator.unobtrusive.parse($form);
+                        }
+                    }
+
+                    document.getElementById('agregarDetalle').addEventListener('click', function () {
+                        var nueva = cuerpo.querySelector('tr.detalle').cloneNode(true);
+                        nueva.querySelectorAll('input[data-campo]').forEach(function (campo) {
+                            campo.value = campo.getAttribute('data-campo') === 'Cantidad' ? '1' : '';
+                            campo.classList.remove('input-validation-error');
+                        });
+                        nueva.querySelectorAll('[data-valmsg-for]').forEach(function (mensaje) {
+                            mensaje.textContent = '';
+                            mensaje.className = 'text-danger field-validation-valid';
+                        });
+                        cuerpo.appendChild(nueva);
+                        renumerar();
+                        volverAValidar();
                     });
-                    fila.querySelectorAll('[data-valmsg-for]').forEach(function (mensaje) {
-                        var nombre = mensaje.getAttribute('data-valmsg-for').split('.').pop();
-                        mensaje.setAttribute('data-valmsg-for', 'Detalles[' + i + '].' + nombre);
+
+                    cuerpo.addEventListener('click', function (evento) {
+                        if (evento.target.classList.contains('quitar') &&
+                            cuerpo.querySelectorAll('tr.detalle').length > 1) {
+                            evento.target.closest('tr').remove();
+                            renumerar();
+                            volverAValidar();
+                        }
                     });
-                });
-            }
-
-            function volverAValidar() {
-                if (window.jQuery && jQuery.validator && jQuery.validator.unobtrusive) {
-                    var $form = jQuery('#formOrden');
-                    $form.removeData('validator').removeData('unobtrusiveValidation');
-                    jQuery.validator.unobtrusive.parse($form);
-                }
-            }
-
-            document.getElementById('agregarDetalle').addEventListener('click', function () {
-                var nueva = cuerpo.querySelector('tr.detalle').cloneNode(true);
-                nueva.querySelectorAll('input[data-campo]').forEach(function (campo) {
-                    campo.value = campo.getAttribute('data-campo') === 'Cantidad' ? '1' : '';
-                    campo.classList.remove('input-validation-error');
-                });
-                nueva.querySelectorAll('[data-valmsg-for]').forEach(function (mensaje) {
-                    mensaje.textContent = '';
-                    mensaje.className = 'text-danger field-validation-valid';
-                });
-                cuerpo.appendChild(nueva);
-                renumerar();
-                volverAValidar();
-            });
-
-            cuerpo.addEventListener('click', function (evento) {
-                if (evento.target.classList.contains('quitar') &&
-                    cuerpo.querySelectorAll('tr.detalle').length > 1) {
-                    evento.target.closest('tr').remove();
-                    renumerar();
-                    volverAValidar();
-                }
-            });
-        })();
+                })();
     </script>
 }

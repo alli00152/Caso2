@@ -1,73 +1,134 @@
-﻿<!DOCTYPE html>
+﻿@{
+    // Solo presentación: qué enlace se resalta y qué rol se muestra.
+    // La autorización real se aplica en el servidor ([Authorize], filtros y servicio).
+    var controladorActual = (ViewContext.RouteData.Values["controller"] ?? "").ToString();
+    var accionActual = (ViewContext.RouteData.Values["action"] ?? "").ToString();
+    Func<bool, string> activo = esActivo => esActivo ? "activo" : "";
+
+    var rolMostrado = "Cliente";
+    if (User.IsInRole(Pedidos.Application.Comun.Roles.Administrador))
+    {
+        rolMostrado = "Administrador";
+    }
+    else if (User.IsInRole(Pedidos.Application.Comun.Roles.Operador))
+    {
+        rolMostrado = "Operador";
+    }
+
+    var estilosVersion = System.IO.File.GetLastWriteTime(Server.MapPath("~/Content/Site.css")).Ticks;
+}
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Pedidos</title>
+    <title>@ViewBag.Title · Pedidos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
     @Styles.Render("~/Content/css")
+    @* Se enlaza también el archivo sin minificar, con versión, para que el navegador nunca use una copia vieja. *@
+    <link href="@Url.Content("~/Content/Site.css")?v=@estilosVersion" rel="stylesheet" />
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-        <div class="container">
-            @Html.ActionLink("Pedidos", "Index", "Ordenes", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menuPrincipal"
-                    aria-controls="menuPrincipal" aria-expanded="false" aria-label="Mostrar u ocultar el menú">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="menuPrincipal">
-                <ul class="navbar-nav me-auto">
-                    @if (User.Identity.IsAuthenticated)
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="app">
+            <aside class="lateral">
+                <a class="marca" href="@Url.Action("Index", "Ordenes", new { area = "" })">
+                    <span class="marca-logo" aria-hidden="true">P</span>
+                    <span class="marca-nombre">Pedidos<small>Despacho y rastreo</small></span>
+                </a>
+
+                <ul class="menu">
+                    <li class="menu-titulo">Órdenes</li>
+                    <li>
+                        <a class="@activo(controladorActual == "Ordenes" && (accionActual == "Index" || accionActual == "Detalle" || accionActual == "Enviar"))" href="@Url.Action("Index", "Ordenes", new { area = "" })">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+                            Órdenes
+                        </a>
+                    </li>
+                    <li>
+                        <a class="@activo(controladorActual == "Ordenes" && accionActual == "Crear")" href="@Url.Action("Crear", "Ordenes", new { area = "" })">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                            Nueva orden
+                        </a>
+                    </li>
+                    <li>
+                        <a class="@activo(controladorActual == "Ordenes" && accionActual == "Rastreo")" href="@Url.Action("Rastreo", "Ordenes", new { area = "" })">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
+                            Rastreo
+                        </a>
+                    </li>
+                    @if (User.IsInRole(Pedidos.Application.Comun.Roles.Administrador))
                     {
-                        <li class="nav-item">@Html.ActionLink("Órdenes", "Index", "Ordenes", new { area = "" }, new { @class = "nav-link" })</li>
-                        <li class="nav-item">@Html.ActionLink("Nueva orden", "Crear", "Ordenes", new { area = "" }, new { @class = "nav-link" })</li>
-                        <li class="nav-item">@Html.ActionLink("Rastreo", "Rastreo", "Ordenes", new { area = "" }, new { @class = "nav-link" })</li>
-                        if (User.IsInRole(Pedidos.Application.Comun.Roles.Administrador))
-                        {
-                            <li class="nav-item">@Html.ActionLink("Usuarios y roles", "Index", "Usuarios", new { area = "" }, new { @class = "nav-link" })</li>
-                        }
-                    }
-                </ul>
-                <ul class="navbar-nav align-items-center">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <li class="nav-item"><span class="navbar-text me-3">@User.Identity.Name</span></li>
-                        <li class="nav-item">
-                            @* Cerrar sesión es POST con token antifalsificación. *@
-                            @using (Html.BeginForm("Salir", "Account", FormMethod.Post, new { @class = "d-inline" }))
-                            {
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
-                            }
+                        <li class="menu-titulo">Administración</li>
+                        <li>
+                            <a class="@activo(controladorActual == "Usuarios")" href="@Url.Action("Index", "Usuarios", new { area = "" })">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" /><circle cx="10" cy="7" r="4" /><path d="M21 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8" /></svg>
+                                Usuarios y roles
+                            </a>
                         </li>
                     }
-                    else
-                    {
-                        <li class="nav-item">@Html.ActionLink("Ingresar", "Ingresar", "Account", new { area = "" }, new { @class = "nav-link" })</li>
-                        <li class="nav-item">@Html.ActionLink("Registrarse", "Registro", "Account", new { area = "" }, new { @class = "nav-link" })</li>
-                    }
                 </ul>
+
+                <div class="lateral-pie">
+                    <div class="usuario">
+                        <span title="@User.Identity.Name">@User.Identity.Name</span>
+                        <small>@rolMostrado</small>
+                    </div>
+                    @* Cerrar sesión es POST con token antifalsificación. *@
+                    @using (Html.BeginForm("Salir", "Account", FormMethod.Post, new { @class = "menu" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+                            Cerrar sesión
+                        </button>
+                    }
+                </div>
+            </aside>
+
+            <main class="principal">
+                <div class="principal-interior">
+                    @* Mensajes del resultado de la operación (TempData sobrevive al redirect del patrón PRG). *@
+                    @if (TempData["Exito"] != null)
+                    {
+                        <div class="alert alert-success" role="status" aria-live="polite">@TempData["Exito"]</div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
+                    }
+
+                    @RenderBody()
+                </div>
+            </main>
+        </div>
+    }
+    else
+    {
+        <div class="invitado">
+            <div class="invitado-cuerpo">
+                <a class="marca" href="@Url.Action("Inicio", "Account", new { area = "" })">
+                    <span class="marca-logo" aria-hidden="true">P</span>
+                    <span class="marca-nombre">Pedidos<small>Despacho y rastreo</small></span>
+                </a>
+
+                @if (TempData["Exito"] != null)
+                {
+                    <div class="alert alert-success" role="status" aria-live="polite">@TempData["Exito"]</div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
+                }
+
+                @RenderBody()
             </div>
         </div>
-    </nav>
-
-    <div class="container body-content mt-3">
-        @* Mensajes del resultado de la operación (TempData sobrevive al redirect del patrón PRG). *@
-        @if (TempData["Exito"] != null)
-        {
-            <div class="alert alert-success" role="status" aria-live="polite">@TempData["Exito"]</div>
-        }
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
-        }
-
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Pedidos</p>
-        </footer>
-    </div>
+    }
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
